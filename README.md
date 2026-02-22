@@ -3,9 +3,9 @@
 Leonardo is a Linux media conversion tool built in Java with a focus on simplicity, portability, and reliability.
 ## Screenshots
 
-![Main Window](docs/LeoScreen1.png)
+![About Leonardo](docs/LeoScreen1.png)
 
-![Conversion Window](docs/LeoScreen2.png)
+![Set For Davinci](docs/LeoScreen2.png)
 
 
 ## Features
