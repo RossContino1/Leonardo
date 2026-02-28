@@ -6,9 +6,6 @@
  * See LICENSE file in the project root for full license information.
  */
 
-
-
-
 package com.ross.leonardo;
 
 import java.awt.BorderLayout;
@@ -23,9 +20,7 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.datatransfer.DataFlavor;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
@@ -51,8 +46,6 @@ import javax.swing.TransferHandler;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
-
-
 public class MainWindow extends JFrame {
 
     private JTextField inputField;
@@ -65,25 +58,18 @@ public class MainWindow extends JFrame {
     private javax.swing.Timer statusTimer;
     private java.util.Properties config;
     private java.io.File configFile;
-   
-
-    
-
-
-
 
     public MainWindow() {
 
-    	initializeConfig();
+        initializeConfig();
 
-    	
-    	setTitle(AppInfo.NAME + "  •  v" + AppInfo.VERSION);
-    	pack();
-    	setMinimumSize(new Dimension(780, 430));  // tweak if you want
-    	setLocationRelativeTo(null);
+        setTitle(AppInfo.NAME + "  •  v" + AppInfo.VERSION);
+        pack();
+        setMinimumSize(new Dimension(780, 430));  // tweak if you want
+        setLocationRelativeTo(null);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10,10));
+        setLayout(new BorderLayout(10, 10));
 
         add(createMainPanel(), BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
@@ -93,18 +79,17 @@ public class MainWindow extends JFrame {
         setAppIcon();
 
         checkFFmpegOnStartup();  // AFTER UI exists
-        
-        setVisible(true);
 
+        setVisible(true);
     }
 
     private JPanel createMainPanel() {
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
 
@@ -122,8 +107,7 @@ public class MainWindow extends JFrame {
         cancelButton.setEnabled(false);
         cancelButton.addActionListener(e -> cancelConversion());
 
-
-     // ----- Preset Label -----
+        // ----- Preset Label -----
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -198,9 +182,9 @@ public class MainWindow extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        progressBar = new JProgressBar(0,100);
+        progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
 
         statusLabel = new JLabel(" ");
@@ -214,20 +198,15 @@ public class MainWindow extends JFrame {
         return panel;
     }
 
-
-
     private JMenuBar createMenu() {
 
         JMenuBar menuBar = new JMenuBar();
 
         // ===== FILE MENU =====
         JMenu fileMenu = new JMenu("File");
-
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(e -> System.exit(0));
-
         fileMenu.add(exitItem);
-
 
         // ===== VIEW MENU =====
         JMenu viewMenu = new JMenu("View");
@@ -244,7 +223,6 @@ public class MainWindow extends JFrame {
         viewMenu.add(lightTheme);
         viewMenu.add(darkTheme);
 
-
         // ===== HELP MENU =====
         JMenu helpMenu = new JMenu("Help");
 
@@ -252,19 +230,13 @@ public class MainWindow extends JFrame {
         userGuideItem.addActionListener(e -> showUserGuide());
 
         JMenuItem docsItem = new JMenuItem("Online Documentation");
-        docsItem.addActionListener(e ->
-                openWebsite(AppInfo.WEBSITE + "/leonardo")
-        );
+        docsItem.addActionListener(e -> openWebsite(AppInfo.WEBSITE + "/leonardo"));
 
         JMenuItem supportItem = new JMenuItem("Support Leonardo");
-        supportItem.addActionListener(e ->
-                openWebsite(AppInfo.WEBSITE + "/support-leonardo")
-        );
+        supportItem.addActionListener(e -> openWebsite(AppInfo.WEBSITE + "/support-leonardo"));
 
         JMenuItem githubItem = new JMenuItem("GitHub Repository");
-        githubItem.addActionListener(e ->
-                openWebsite("https://github.com/RossContino1/Leonardo")
-        );
+        githubItem.addActionListener(e -> openWebsite("https://github.com/RossContino1/Leonardo"));
 
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(e -> new AboutDialog(this));
@@ -277,7 +249,6 @@ public class MainWindow extends JFrame {
         helpMenu.addSeparator();
         helpMenu.add(aboutItem);
 
-
         // ===== ADD MENUS TO BAR =====
         menuBar.add(fileMenu);
         menuBar.add(viewMenu);
@@ -285,7 +256,6 @@ public class MainWindow extends JFrame {
 
         return menuBar;
     }
-
 
     private void chooseFile() {
 
@@ -315,15 +285,19 @@ public class MainWindow extends JFrame {
         }
     }
 
-
     private void startConversion() {
 
         String input = inputField.getText();
         String output = outputField.getText();
 
         if (input.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a file first.");
+            JOptionPane.showMessageDialog(this, "Please select a file first.");
+            return;
+        }
+
+        Preset selectedPreset = (Preset) presetComboBox.getSelectedItem();
+        if (selectedPreset == null) {
+            JOptionPane.showMessageDialog(this, "Please select a preset.");
             return;
         }
 
@@ -331,9 +305,11 @@ public class MainWindow extends JFrame {
         convertButton.setEnabled(false);
         progressBar.setValue(0);
 
+        // ✅ PASS THE PRESET INTO THE CONVERTER (THIS IS THE FIX)
         currentConverter = new VideoConverter(
                 input,
                 output,
+                selectedPreset,
                 progressBar,
                 convertButton,
                 this
@@ -341,14 +317,11 @@ public class MainWindow extends JFrame {
 
         convertButton.setEnabled(false);
         cancelButton.setEnabled(true);
-        
-        Preset selectedPreset = (Preset) presetComboBox.getSelectedItem();
+
         config.setProperty("lastPreset", selectedPreset.getName());
         saveConfig();
 
-
         currentConverter.execute();
-
     }
 
     private void enableDragAndDrop() {
@@ -356,29 +329,20 @@ public class MainWindow extends JFrame {
         setTransferHandler(new TransferHandler() {
 
             public boolean canImport(TransferSupport support) {
-                return support.isDataFlavorSupported(
-                        DataFlavor.javaFileListFlavor);
+                return support.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
             }
 
+            @SuppressWarnings("unchecked")
             public boolean importData(TransferSupport support) {
                 try {
-                    List<File> files = (List<File>)
-                            support.getTransferable()
-                                    .getTransferData(
-                                            DataFlavor.javaFileListFlavor);
+                    List<File> files = (List<File>) support.getTransferable()
+                            .getTransferData(DataFlavor.javaFileListFlavor);
 
                     File file = files.get(0);
                     inputField.setText(file.getAbsolutePath());
 
-                    String name = file.getAbsolutePath().toLowerCase();
-                    if (name.endsWith(".mp4")) {
-                        outputField.setText(file.getAbsolutePath()
-                                .replaceAll("(?i)\\.mp4$", ".mov"));
-                    }
-                    else if (name.endsWith(".mov")) {
-                        outputField.setText(file.getAbsolutePath()
-                                .replaceAll("(?i)\\.mov$", ".mp4"));
-                    }
+                    // ✅ Respect the selected preset (your old DnD hard-coded mp4<->mov)
+                    setOutputFromPreset(file);
 
                     return true;
                 } catch (Exception e) {
@@ -398,7 +362,7 @@ public class MainWindow extends JFrame {
         convertButton.setEnabled(true);
         progressBar.setValue(0);
     }
-    
+
     private void initializePresets() {
 
         // --- DaVinci (LOCKED PARAMETERS) ---
@@ -436,12 +400,12 @@ public class MainWindow extends JFrame {
                 )
         );
 
-     // --- TikTok Vertical (9:16 Auto Crop) ---
+        // --- TikTok Vertical (9:16 Auto Crop) ---
         Preset tiktokPreset = new Preset(
                 "TikTok Vertical 9:16 (Auto Crop)",
                 ".mp4",
                 java.util.List.of(
-                        "-vf", "crop=in_h*9/16:in_h,scale=1080:1920",
+                		"-vf", "crop=w=in_h*9/16:h=in_h:x=(in_w-in_h*9/16)/2:y=0,scale=1080:1920",
                         "-c:v", "libx264",
                         "-preset", "medium",
                         "-crf", "20",
@@ -453,12 +417,11 @@ public class MainWindow extends JFrame {
                         "-movflags", "+faststart"
                 )
         );
-        
+
         presetComboBox.addItem(davinciPreset);
         presetComboBox.addItem(remuxPreset);
         presetComboBox.addItem(youtubePreset);
         presetComboBox.addItem(tiktokPreset);
-
 
         presetComboBox.setSelectedIndex(0); // Default to DaVinci
     }
@@ -473,16 +436,14 @@ public class MainWindow extends JFrame {
         Preset selectedPreset = (Preset) presetComboBox.getSelectedItem();
         if (selectedPreset == null) return;
 
-        String baseName = file.getAbsolutePath()
-                .replaceAll("\\.[^.]+$", "");
-
+        String baseName = file.getAbsolutePath().replaceAll("\\.[^.]+$", "");
         String newOutput = baseName + selectedPreset.getOutputExtension();
 
         boolean overwritePrevented = false;
 
         if (newOutput.equals(file.getAbsolutePath())) {
-            newOutput = baseName + "_" +
-                    selectedPreset.getName().replaceAll("\\s+", "_")
+            newOutput = baseName + "_"
+                    + selectedPreset.getName().replaceAll("\\s+", "_")
                     + selectedPreset.getOutputExtension();
             overwritePrevented = true;
         }
@@ -493,9 +454,7 @@ public class MainWindow extends JFrame {
             flashOutputField();
             showStatusMessage("Output filename adjusted to prevent overwrite");
         }
-
     }
-
 
     private void flashOutputField() {
 
@@ -537,7 +496,6 @@ public class MainWindow extends JFrame {
             }
 
             configFile = new java.io.File(dir, "config.properties");
-
             config = new java.util.Properties();
 
             if (configFile.exists()) {
@@ -579,28 +537,22 @@ public class MainWindow extends JFrame {
         String theme = config.getProperty("theme", "system");
 
         try {
-
             switch (theme) {
                 case "dark":
                     FlatDarkLaf.setup();
                     break;
-
                 case "light":
                     FlatLightLaf.setup();
                     break;
-
                 default:
-                    // System Look and Feel
                     javax.swing.UIManager.setLookAndFeel(
                             javax.swing.UIManager.getSystemLookAndFeelClassName()
                     );
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     private void changeTheme(String theme) {
 
@@ -608,16 +560,13 @@ public class MainWindow extends JFrame {
         saveConfig();
 
         try {
-
             switch (theme) {
                 case "dark":
                     FlatDarkLaf.setup();
                     break;
-
                 case "light":
                     FlatLightLaf.setup();
                     break;
-
                 default:
                     javax.swing.UIManager.setLookAndFeel(
                             javax.swing.UIManager.getSystemLookAndFeelClassName()
@@ -637,7 +586,6 @@ public class MainWindow extends JFrame {
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
-            // Give it a short timeout so it never hangs
             if (!process.waitFor(2, java.util.concurrent.TimeUnit.SECONDS)) {
                 process.destroy();
                 return false;
@@ -649,33 +597,26 @@ public class MainWindow extends JFrame {
         }
     }
 
-
     private void checkFFmpegOnStartup() {
 
         if (!isFFmpegAvailable()) {
 
-        	JOptionPane.showMessageDialog(
-        	        this,
-        	        "FFmpeg was not found on your system.\n\n" +
-        	        "Leonardo requires FFmpeg to convert media files.\n\n" +
-        	        "Install FFmpeg using your package manager:\n" +
-        	        "Arch / Garuda: sudo pacman -S ffmpeg\n" +
-        	        "Ubuntu / Debian: sudo apt install ffmpeg\n" +
-        	        "Fedora: sudo dnf install ffmpeg\n\n" +
-        	        "Then restart Leonardo.",
-        	        "FFmpeg Not Found",
-        	        JOptionPane.WARNING_MESSAGE
-        	);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "FFmpeg was not found on your system.\n\n" +
+                    "Leonardo requires FFmpeg to convert media files.\n\n" +
+                    "Install FFmpeg using your package manager:\n" +
+                    "Arch / Garuda: sudo pacman -S ffmpeg\n" +
+                    "Ubuntu / Debian: sudo apt install ffmpeg\n" +
+                    "Fedora: sudo dnf install ffmpeg\n\n" +
+                    "Then restart Leonardo.",
+                    "FFmpeg Not Found",
+                    JOptionPane.WARNING_MESSAGE
+            );
 
-
-            // Disable conversion functionality
             convertButton.setEnabled(false);
             convertButton.setToolTipText("Disabled: FFmpeg is not installed");
-
-            // Optional: Show persistent status message
             statusLabel.setText("FFmpeg not detected — conversion disabled");
-            
-            
         }
     }
 
@@ -698,13 +639,11 @@ public class MainWindow extends JFrame {
                 return;
             }
 
-            // If running unpackaged and it’s a normal file URL, open directly
             if ("file".equalsIgnoreCase(resource.getProtocol())) {
                 Desktop.getDesktop().browse(resource.toURI());
                 return;
             }
 
-            // If running from JAR/jpackage (jar: URL), extract to temp file first
             try (java.io.InputStream in = getClass().getResourceAsStream(resourcePath)) {
                 if (in == null) {
                     JOptionPane.showMessageDialog(
@@ -719,10 +658,8 @@ public class MainWindow extends JFrame {
                 java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("leonardo-help-");
                 java.nio.file.Path outFile = tempDir.resolve(page);
 
-                // Copy the requested page
                 java.nio.file.Files.copy(in, outFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
-                // Optional: also copy the other help pages so links work when clicked
                 copyHelpResourceTo(tempDir, "modes.html");
                 copyHelpResourceTo(tempDir, "davinci.html");
                 copyHelpResourceTo(tempDir, "obs-remux.html");
@@ -731,7 +668,6 @@ public class MainWindow extends JFrame {
                 copyHelpResourceTo(tempDir, "troubleshooting.html");
                 copyHelpResourceTo(tempDir, "faq.html");
 
-                // Open the extracted file
                 Desktop.getDesktop().browse(outFile.toUri());
             }
 
@@ -753,13 +689,10 @@ public class MainWindow extends JFrame {
             if (in == null) return;
             java.nio.file.Path out = tempDir.resolve(filename);
             java.nio.file.Files.copy(in, out, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception ignored) {
-            // If a page is missing, don't break help completely
-        }
+        } catch (Exception ignored) { }
     }
 
     private void openWebsite(String url) {
-
         try {
             java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
         } catch (Exception e) {
@@ -784,7 +717,7 @@ public class MainWindow extends JFrame {
             Image img = base.getImage();
 
             java.util.List<Image> icons = new java.util.ArrayList<>();
-            int[] sizes = {16, 32, 48, 64, 128, 256};
+            int[] sizes = { 16, 32, 48, 64, 128, 256 };
 
             for (int s : sizes) {
                 icons.add(img.getScaledInstance(s, s, Image.SCALE_SMOOTH));
@@ -796,6 +729,4 @@ public class MainWindow extends JFrame {
             ex.printStackTrace();
         }
     }
-
-
 }
