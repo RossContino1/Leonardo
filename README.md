@@ -30,6 +30,9 @@ sudo apt install ffmpeg
 **Fedora:**
 sudo dnf install ffmpeg
 
+## Leonardo 10.0.13
+- Fixes the problem with TikTok 9:16 formating
+
 ## Leonardo 10.0.12
 
 - Java/Eclipse rewrite of Leonardo
