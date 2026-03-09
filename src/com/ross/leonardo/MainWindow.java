@@ -58,6 +58,7 @@ public class MainWindow extends JFrame {
     private javax.swing.Timer statusTimer;
     private java.util.Properties config;
     private java.io.File configFile;
+    private JLabel statusLabel;
 
     public MainWindow() {
 
@@ -65,7 +66,7 @@ public class MainWindow extends JFrame {
 
         setTitle(AppInfo.NAME + "  •  v" + AppInfo.VERSION);
         pack();
-        setMinimumSize(new Dimension(780, 430));  // tweak if you want
+        setMinimumSize(new Dimension(780, 430));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,7 +79,7 @@ public class MainWindow extends JFrame {
         enableDragAndDrop();
         setAppIcon();
 
-        checkFFmpegOnStartup();  // AFTER UI exists
+        checkFFmpegOnStartup();
 
         setVisible(true);
     }
@@ -107,14 +108,12 @@ public class MainWindow extends JFrame {
         cancelButton.setEnabled(false);
         cancelButton.addActionListener(e -> cancelConversion());
 
-        // ----- Preset Label -----
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.weightx = 1;
         panel.add(new JLabel("Preset:"), gbc);
 
-        // ----- Preset Dropdown -----
         presetComboBox = new JComboBox<>();
         initializePresets();
         restoreLastPreset();
@@ -128,39 +127,31 @@ public class MainWindow extends JFrame {
             }
         });
 
-        // Reset gridwidth for normal 2-column layout
         gbc.gridwidth = 1;
 
-        // ----- Input Label -----
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weightx = 1;
         panel.add(new JLabel("Input File:"), gbc);
 
-        // ----- Input Field -----
         gbc.gridy = 3;
         panel.add(inputField, gbc);
 
-        // ----- Browse Button -----
         gbc.gridx = 1;
         gbc.weightx = 0;
         panel.add(browseBtn, gbc);
 
-        // ----- Output Label -----
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.weightx = 1;
         panel.add(new JLabel("Output File:"), gbc);
 
-        // ----- Output Field -----
         gbc.gridy = 5;
         panel.add(outputField, gbc);
 
-        // Reset gridwidth
         gbc.gridwidth = 1;
 
-        // ----- Button Panel (Centered) -----
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         buttonPanel.add(convertButton);
         buttonPanel.add(cancelButton);
@@ -170,13 +161,10 @@ public class MainWindow extends JFrame {
         gbc.gridwidth = 2;
         panel.add(buttonPanel, gbc);
 
-        // Reset gridwidth
         gbc.gridwidth = 1;
 
         return panel;
     }
-
-    private JLabel statusLabel;
 
     private JPanel createBottomPanel() {
 
@@ -202,13 +190,11 @@ public class MainWindow extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
 
-        // ===== FILE MENU =====
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(e -> System.exit(0));
         fileMenu.add(exitItem);
 
-        // ===== VIEW MENU =====
         JMenu viewMenu = new JMenu("View");
 
         JMenuItem systemTheme = new JMenuItem("System Theme");
@@ -223,7 +209,6 @@ public class MainWindow extends JFrame {
         viewMenu.add(lightTheme);
         viewMenu.add(darkTheme);
 
-        // ===== HELP MENU =====
         JMenu helpMenu = new JMenu("Help");
 
         JMenuItem userGuideItem = new JMenuItem("User Guide");
@@ -249,7 +234,6 @@ public class MainWindow extends JFrame {
         helpMenu.addSeparator();
         helpMenu.add(aboutItem);
 
-        // ===== ADD MENUS TO BAR =====
         menuBar.add(fileMenu);
         menuBar.add(viewMenu);
         menuBar.add(helpMenu);
@@ -261,7 +245,6 @@ public class MainWindow extends JFrame {
 
         JFileChooser chooser = new JFileChooser();
 
-        // Restore last used directory
         String lastDir = config.getProperty("lastFolder");
         if (lastDir != null) {
             chooser.setCurrentDirectory(new File(lastDir));
@@ -273,14 +256,11 @@ public class MainWindow extends JFrame {
 
             File file = chooser.getSelectedFile();
 
-            // Set input field
             inputField.setText(file.getAbsolutePath());
 
-            // Save last folder
             config.setProperty("lastFolder", file.getParent());
             saveConfig();
 
-            // Auto-set output based on selected preset
             setOutputFromPreset(file);
         }
     }
@@ -305,7 +285,6 @@ public class MainWindow extends JFrame {
         convertButton.setEnabled(false);
         progressBar.setValue(0);
 
-        // ✅ PASS THE PRESET INTO THE CONVERTER (THIS IS THE FIX)
         currentConverter = new VideoConverter(
                 input,
                 output,
@@ -341,7 +320,6 @@ public class MainWindow extends JFrame {
                     File file = files.get(0);
                     inputField.setText(file.getAbsolutePath());
 
-                    // ✅ Respect the selected preset (your old DnD hard-coded mp4<->mov)
                     setOutputFromPreset(file);
 
                     return true;
@@ -365,7 +343,6 @@ public class MainWindow extends JFrame {
 
     private void initializePresets() {
 
-        // --- DaVinci (LOCKED PARAMETERS) ---
         Preset davinciPreset = new Preset(
                 "DaVinci Resolve (Linux Free Compatible)",
                 ".mov",
@@ -378,7 +355,6 @@ public class MainWindow extends JFrame {
                 )
         );
 
-        // --- OBS Remux (Fast, No Re-Encode) ---
         Preset remuxPreset = new Preset(
                 "OBS Remux (Fast, No Re-Encode)",
                 ".mp4",
@@ -387,35 +363,81 @@ public class MainWindow extends JFrame {
                 )
         );
 
-        // --- YouTube Export ---
+        java.util.List<String> youtubeArgs;
+        if (FFmpegUtil.hasEncoder("libx264")) {
+            youtubeArgs = java.util.List.of(
+                    "-c:v", "libx264",
+                    "-preset", "slow",
+                    "-crf", "18",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-movflags", "+faststart"
+            );
+        } else if (FFmpegUtil.hasEncoder("libopenh264")) {
+            youtubeArgs = java.util.List.of(
+                    "-c:v", "libopenh264",
+                    "-b:v", "8M",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-movflags", "+faststart"
+            );
+        } else {
+            youtubeArgs = java.util.List.of(
+                    "-c:v", "mpeg4",
+                    "-q:v", "2",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-movflags", "+faststart"
+            );
+        }
+
         Preset youtubePreset = new Preset(
                 "YouTube H.264",
                 ".mp4",
-                java.util.List.of(
-                        "-c:v", "libx264",
-                        "-preset", "slow",
-                        "-crf", "18",
-                        "-c:a", "aac",
-                        "-b:a", "192k"
-                )
+                youtubeArgs
         );
 
-        // --- TikTok Vertical (9:16 Auto Crop) ---
+        java.util.List<String> tiktokArgs;
+        if (FFmpegUtil.hasEncoder("libx264")) {
+            tiktokArgs = java.util.List.of(
+                    "-vf", "crop=w=in_h*9/16:h=in_h:x=(in_w-in_h*9/16)/2:y=0,scale=1080:1920",
+                    "-c:v", "libx264",
+                    "-preset", "medium",
+                    "-crf", "20",
+                    "-pix_fmt", "yuv420p",
+                    "-profile:v", "high",
+                    "-level", "4.1",
+                    "-c:a", "aac",
+                    "-b:a", "160k",
+                    "-movflags", "+faststart"
+            );
+        } else if (FFmpegUtil.hasEncoder("libopenh264")) {
+            tiktokArgs = java.util.List.of(
+                    "-vf", "crop=w=in_h*9/16:h=in_h:x=(in_w-in_h*9/16)/2:y=0,scale=1080:1920",
+                    "-c:v", "libopenh264",
+                    "-b:v", "6M",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "160k",
+                    "-movflags", "+faststart"
+            );
+        } else {
+            tiktokArgs = java.util.List.of(
+                    "-vf", "crop=w=in_h*9/16:h=in_h:x=(in_w-in_h*9/16)/2:y=0,scale=1080:1920",
+                    "-c:v", "mpeg4",
+                    "-q:v", "2",
+                    "-c:a", "aac",
+                    "-b:a", "160k",
+                    "-movflags", "+faststart"
+            );
+        }
+
         Preset tiktokPreset = new Preset(
                 "TikTok Vertical 9:16 (Auto Crop)",
                 ".mp4",
-                java.util.List.of(
-                		"-vf", "crop=w=in_h*9/16:h=in_h:x=(in_w-in_h*9/16)/2:y=0,scale=1080:1920",
-                        "-c:v", "libx264",
-                        "-preset", "medium",
-                        "-crf", "20",
-                        "-pix_fmt", "yuv420p",
-                        "-profile:v", "high",
-                        "-level", "4.1",
-                        "-c:a", "aac",
-                        "-b:a", "160k",
-                        "-movflags", "+faststart"
-                )
+                tiktokArgs
         );
 
         presetComboBox.addItem(davinciPreset);
@@ -423,7 +445,7 @@ public class MainWindow extends JFrame {
         presetComboBox.addItem(youtubePreset);
         presetComboBox.addItem(tiktokPreset);
 
-        presetComboBox.setSelectedIndex(0); // Default to DaVinci
+        presetComboBox.setSelectedIndex(0);
     }
 
     public void conversionFinished() {
@@ -434,7 +456,9 @@ public class MainWindow extends JFrame {
     private void setOutputFromPreset(File file) {
 
         Preset selectedPreset = (Preset) presetComboBox.getSelectedItem();
-        if (selectedPreset == null) return;
+        if (selectedPreset == null) {
+            return;
+        }
 
         String baseName = file.getAbsolutePath().replaceAll("\\.[^.]+$", "");
         String newOutput = baseName + selectedPreset.getOutputExtension();
@@ -459,7 +483,7 @@ public class MainWindow extends JFrame {
     private void flashOutputField() {
 
         Color originalColor = outputField.getBackground();
-        outputField.setBackground(new Color(255, 255, 180)); // light yellow
+        outputField.setBackground(new Color(255, 255, 180));
 
         javax.swing.Timer timer = new javax.swing.Timer(800, e -> {
             outputField.setBackground(originalColor);
@@ -522,7 +546,9 @@ public class MainWindow extends JFrame {
     private void restoreLastPreset() {
 
         String lastPreset = config.getProperty("lastPreset");
-        if (lastPreset == null) return;
+        if (lastPreset == null) {
+            return;
+        }
 
         for (int i = 0; i < presetComboBox.getItemCount(); i++) {
             if (presetComboBox.getItemAt(i).getName().equals(lastPreset)) {
@@ -686,10 +712,13 @@ public class MainWindow extends JFrame {
         String p = "/com/ross/leonardo/resources/help/" + filename;
 
         try (java.io.InputStream in = getClass().getResourceAsStream(p)) {
-            if (in == null) return;
+            if (in == null) {
+                return;
+            }
             java.nio.file.Path out = tempDir.resolve(filename);
             java.nio.file.Files.copy(in, out, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     private void openWebsite(String url) {
@@ -717,7 +746,7 @@ public class MainWindow extends JFrame {
             Image img = base.getImage();
 
             java.util.List<Image> icons = new java.util.ArrayList<>();
-            int[] sizes = { 16, 32, 48, 64, 128, 256 };
+            int[] sizes = {16, 32, 48, 64, 128, 256};
 
             for (int s : sizes) {
                 icons.add(img.getScaledInstance(s, s, Image.SCALE_SMOOTH));

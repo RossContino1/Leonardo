@@ -6,9 +6,6 @@
  * See LICENSE file in the project root for full license information.
  */
 
-
-
-
 package com.ross.leonardo;
 
 import java.io.BufferedReader;
@@ -19,12 +16,42 @@ public class FFmpegUtil {
     public static boolean isFFmpegAvailable() {
         try {
             ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-version");
+            pb.redirectErrorStream(true);
             Process process = pb.start();
             process.waitFor();
             return process.exitValue() == 0;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean hasEncoder(String encoderName) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-encoders");
+            pb.redirectErrorStream(true);
+
+            Process process = pb.start();
+
+            try (BufferedReader reader =
+                         new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String trimmed = line.trim();
+
+                    if (trimmed.matches("^[VASFS\\.]{6}\\s+" + java.util.regex.Pattern.quote(encoderName) + "\\b.*$")) {
+                        process.waitFor();
+                        return true;
+                    }
+                }
+            }
+
+            process.waitFor();
+        } catch (Exception e) {
+            return false;
+        }
+
+        return false;
     }
 
     public static double getDurationSeconds(String filePath) {
@@ -34,17 +61,21 @@ public class FFmpegUtil {
 
             Process process = pb.start();
 
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+            try (BufferedReader reader =
+                         new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("Duration:")) {
-                    String duration = line.split("Duration:")[1].split(",")[0].trim();
-                    return parseDuration(duration);
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("Duration:")) {
+                        String duration = line.split("Duration:")[1].split(",")[0].trim();
+                        return parseDuration(duration);
+                    }
                 }
             }
-        } catch (Exception ignored) {}
+
+            process.waitFor();
+        } catch (Exception ignored) {
+        }
 
         return 1;
     }
@@ -60,10 +91,17 @@ public class FFmpegUtil {
     public static double extractTimeInSeconds(String line) {
         try {
             int index = line.indexOf("time=");
-            if (index == -1) return 0;
+            if (index == -1) {
+                return 0;
+            }
 
-            String timePart = line.substring(index + 5, index + 16);
-            return parseDuration(timePart);
+            String rest = line.substring(index + 5).trim();
+            String[] tokens = rest.split("\\s+");
+            if (tokens.length == 0) {
+                return 0;
+            }
+
+            return parseDuration(tokens[0]);
         } catch (Exception e) {
             return 0;
         }

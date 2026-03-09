@@ -8,24 +8,32 @@
 
 package com.ross.leonardo;
 
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VideoConverter extends SwingWorker<Void, Integer> {
 
     private final String input;
     private final String output;
-    private final Preset preset;                 // ✅ NEW
+    private final Preset preset;
     private final JProgressBar progressBar;
     private final JButton convertButton;
     private final JFrame parent;
     private Exception conversionError = null;
     private Process ffmpegProcess;
+    private String ffmpegLog = "";
 
     public VideoConverter(String input,
                           String output,
-                          Preset preset,          // ✅ NEW
+                          Preset preset,
                           JProgressBar progressBar,
                           JButton convertButton,
                           JFrame parent) {
@@ -42,17 +50,15 @@ public class VideoConverter extends SwingWorker<Void, Integer> {
     protected Void doInBackground() {
 
         try {
-
             double duration = FFmpegUtil.getDurationSeconds(input);
 
             List<String> command = new ArrayList<>();
             command.add("ffmpeg");
             command.add("-hide_banner");
-            command.add("-y");               // overwrite output if it exists
+            command.add("-y");
             command.add("-i");
             command.add(input);
 
-            // ✅ APPLY THE PRESET FFmpeg ARGS (THIS IS THE FIX)
             if (preset != null && preset.getFfmpegArgs() != null) {
                 command.addAll(preset.getFfmpegArgs());
             }
@@ -65,21 +71,40 @@ public class VideoConverter extends SwingWorker<Void, Integer> {
             ffmpegProcess = pb.start();
             Process process = ffmpegProcess;
 
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder logBuilder = new StringBuilder();
 
-            String line;
+            try (BufferedReader reader =
+                         new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 
-            while (!isCancelled() && (line = reader.readLine()) != null) {
+                String line;
 
-                if (line.contains("time=")) {
-                    double current = FFmpegUtil.extractTimeInSeconds(line);
-                    int percent = (int) ((current / duration) * 100);
-                    publish(Math.min(percent, 100));
+                while (!isCancelled() && (line = reader.readLine()) != null) {
+                    logBuilder.append(line).append(System.lineSeparator());
+
+                    if (line.contains("time=") && duration > 0) {
+                        double current = FFmpegUtil.extractTimeInSeconds(line);
+                        int percent = (int) ((current / duration) * 100);
+                        publish(Math.min(percent, 100));
+                    }
                 }
             }
 
-            process.waitFor();
+            int exitCode = process.waitFor();
+            ffmpegLog = logBuilder.toString();
+
+            if (isCancelled()) {
+                return null;
+            }
+
+            File outFile = new File(output);
+
+            if (exitCode != 0) {
+                throw new RuntimeException("FFmpeg exited with code " + exitCode + ".\n\n" + ffmpegLog);
+            }
+
+            if (!outFile.exists() || outFile.length() == 0) {
+                throw new RuntimeException("FFmpeg finished but no output file was created.\n\n" + ffmpegLog);
+            }
 
         } catch (Exception e) {
             conversionError = e;
@@ -90,6 +115,10 @@ public class VideoConverter extends SwingWorker<Void, Integer> {
 
     @Override
     protected void process(List<Integer> chunks) {
+        if (chunks == null || chunks.isEmpty()) {
+            return;
+        }
+
         int value = chunks.get(chunks.size() - 1);
         progressBar.setValue(value);
     }
@@ -99,7 +128,6 @@ public class VideoConverter extends SwingWorker<Void, Integer> {
 
         convertButton.setEnabled(true);
 
-        // Re-enable preset & reset cancel in MainWindow
         if (parent instanceof MainWindow) {
             ((MainWindow) parent).conversionFinished();
         }
@@ -121,8 +149,18 @@ public class VideoConverter extends SwingWorker<Void, Integer> {
         }
 
         if (conversionError != null) {
+            String message = conversionError.getMessage();
+
+            if (message == null || message.isBlank()) {
+                message = "Unknown FFmpeg error.";
+            }
+
+            if (message.length() > 2000) {
+                message = message.substring(0, 2000) + "\n\n...output truncated...";
+            }
+
             JOptionPane.showMessageDialog(parent,
-                    "Conversion failed:\n" + conversionError.getMessage(),
+                    "Conversion failed:\n\n" + message,
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
