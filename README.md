@@ -40,6 +40,7 @@ sudo dnf install ffmpeg
 
 ## Leonardo 10.0.13
 - Fixes the problem with TikTok 9:16 formating
+- Small fix for those installing on Fedora - checks for missing libraries
 
 ## Leonardo 10.0.12
 
