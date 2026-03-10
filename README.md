@@ -17,9 +17,9 @@ Leonardo has been featured on LinuxLinks:
 
 🔗 https://www.linuxlinks.com/leonardo-media-conversion-application/
 
-GitHub Stars ![GitHub stars](https://img.shields.io/github/stars/RossContino1/Leonardo) ⭐
-
 LinuxLinks is a well-known Linux resource site that highlights useful open-source software and developer projects.
+
+GitHub Stars ![GitHub stars](https://img.shields.io/github/stars/RossContino1/Leonardo) ⭐
 
 ## Features
 
