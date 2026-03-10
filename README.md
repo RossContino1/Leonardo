@@ -1,7 +1,7 @@
 # Leonardo – Linux Media Conversion Application
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
-![License](https://img.shields.io/badge/license-GPL-green)
+![License](https://img.shields.io/badge/license-MIT-green)
 ![FFmpeg](https://img.shields.io/badge/Powered%20by-FFmpeg-orange)
 
 ⭐ If you find Leonardo useful, consider starring the project!
