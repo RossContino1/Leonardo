@@ -1,8 +1,10 @@
-# Leonardo
+# Leonardo – Linux Media Conversion Application
 
-Leonardo is a Linux media conversion tool built in Java with a focus on simplicity, portability, and reliability.
+![Platform](https://img.shields.io/badge/platform-Linux-blue)
+![License](https://img.shields.io/badge/license-GPL-green)
+![FFmpeg](https://img.shields.io/badge/Powered%20by-FFmpeg-orange)
 
-If Leonardo saved you from writing painful FFmpeg commands, consider giving the project a ⭐ on GitHub!
+⭐ If you find Leonardo useful, consider starring the project!
 
 ## Screenshots
 
