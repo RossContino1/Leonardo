@@ -80,6 +80,7 @@ Remember — at Bytes, Bread, and Barbecue we keep your code crispy and your fil
 If the AppImage doesn’t start, your system may be missing FUSE.
 
 Fix (quick):
+
 **Fedora:**
 
 sudo dnf install fuse fuse-libs
