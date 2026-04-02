@@ -70,8 +70,29 @@ Remember — at Bytes, Bread, and Barbecue we keep your code crispy and your fil
    chmod +x Leonardo-*.AppImage
 3. Run:
    ./Leonardo-*.AppImage
+   
+✅ Runs on most Linux systems — no install required (AppImage)
 
 [![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue?style=for-the-badge)](https://bytesbreadbbq.com/leonardo/)
+
+⚠️ Having Trouble Launching?
+
+If the AppImage doesn’t start, your system may be missing FUSE.
+
+Fix (quick):
+**Fedora:**
+
+sudo dnf install fuse fuse-libs
+
+**Ubuntu / Mint:**
+
+sudo apt install libfuse2
+
+**Arch:**
+
+sudo pacman -S fuse2
+
+👉 After installing, try launching again.
 
 ## Donations
 
