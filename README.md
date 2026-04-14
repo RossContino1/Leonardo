@@ -118,7 +118,8 @@ sudo pacman -S fuse2
 ## ☕ Support Leonardo
 
 Leonardo is free to use. If Leonardo saves you time or simplifies your workflow, consider supporting development:
-
+```md
+TEST
 [![Support via PayPal](https://img.shields.io/badge/Support-PayPal-blue?style=for-the-badge&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=XS9MXN5AE5P3S)
 
 Your support helps keep the code crispy and the files smokin’ hot.
