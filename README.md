@@ -91,7 +91,6 @@ Leonardo can also be run on Windows, macOS, or Linux using Java:
 ```bash
 java -jar Leonardo-*.jar
 
-
 ⚠️ Having Trouble Launching?
 
 If the AppImage doesn’t start, your system may be missing FUSE.
