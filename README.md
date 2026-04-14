@@ -84,6 +84,14 @@ Remember — at Bytes, Bread, and Barbecue we keep your code crispy and your fil
 
 [![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue?style=for-the-badge)](https://bytesbreadbbq.com/leonardo/)
 
+## Cross-Platform (JAR)
+
+Leonardo can also be run on Windows, macOS, or Linux using Java:
+
+    java -jar Leonardo-*.jar
+
+Requires Java 17+
+
 ⚠️ Having Trouble Launching?
 
 If the AppImage doesn’t start, your system may be missing FUSE.
