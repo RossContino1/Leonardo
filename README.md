@@ -1,4 +1,4 @@
-# Leonardo – Linux Media Conversion Application
+# Leonardo is a simple, fast media conversion app for Linux that lets you convert videos for tools like DaVinci Resolve — without memorizing FFmpeg commands.
 
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -6,11 +6,15 @@
 
 ⭐ If you find Leonardo useful, consider starring the project!
 
+🎬 Convert videos for DaVinci Resolve on Linux in seconds — no terminal required.
+
 ## Screenshots
 
 ![About Leonardo](docs/LeoScreen1.png)
 
 ![Set For Davinci](docs/LeoScreen2.png)
+
+### Clean, simple interface — no terminal required
 
 
 ## 📰 Media Mention
@@ -45,8 +49,13 @@ sudo apt install ffmpeg
 **Fedora:**
 sudo dnf install ffmpeg
 
+## Leonardo 10.0.14
+- Added optional donation support (non-intrusive, one-time prompt)
+- Improved release packaging and reliability
+- Fixed resource handling (icons, help system now fully bundled)
+
 ## Leonardo 10.0.13
-- Fixes the problem with TikTok 9:16 formating
+- Fixed TikTok 9:16 formatting issue
 - Small fix for those installing on Fedora - checks for missing libraries
 
 ## Leonardo 10.0.12
@@ -58,7 +67,7 @@ sudo dnf install ffmpeg
 - Added GitHub link in menu
 - Updated help system
 
-Download the AppImage below.
+Download the latest release below (AppImage + JAR).
 
 Remember — at Bytes, Bread, and Barbecue we keep your code crispy and your files smokin’ hot.
 
@@ -74,6 +83,14 @@ Remember — at Bytes, Bread, and Barbecue we keep your code crispy and your fil
 ✅ Runs on most Linux systems — no install required (AppImage)
 
 [![Download ZIP](https://img.shields.io/badge/Download-ZIP-blue?style=for-the-badge)](https://bytesbreadbbq.com/leonardo/)
+
+## Cross-Platform (JAR)
+
+Leonardo can also be run on Windows, macOS, or Linux using Java:
+
+```bash
+java -jar Leonardo-*.jar
+
 
 ⚠️ Having Trouble Launching?
 
@@ -101,7 +118,7 @@ sudo pacman -S fuse2
 
 ## ☕ Support Leonardo
 
-Leonardo is free to use. If it saves you time (or brisket), consider supporting development:
+Leonardo is free to use. If Leonardo saves you time or simplifies your workflow, consider supporting development:
 
 [![Support via PayPal](https://img.shields.io/badge/Support-PayPal-blue?style=for-the-badge&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=XS9MXN5AE5P3S)
 

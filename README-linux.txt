@@ -3,8 +3,8 @@ Leonardo – Linux AppImage
 
 Thank you for downloading Leonardo!
 
-Leonardo-10.0.7-Linux/
- ├── Leonardo-10.0.7.AppImage
+Leonardo-10.0.14-Linux/
+ ├── Leonardo-10.0.14.AppImage
  ├── install.sh
  ├── uninstall.sh
  └── README.txt

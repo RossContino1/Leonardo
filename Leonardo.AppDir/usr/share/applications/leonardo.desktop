@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Leonardo
+Exec=AppRun
+Icon=leonardo
+Terminal=false
+Categories=AudioVideo;
+StartupWMClass=com-ross-leonardo-LeonardoApp
