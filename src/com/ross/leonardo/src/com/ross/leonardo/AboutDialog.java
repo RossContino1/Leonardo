@@ -91,7 +91,8 @@ public class AboutDialog extends JDialog {
                         "• DaVinci Resolve MP4 → MOV Compatibility<br>" +
                         "• OBS Recording Remux<br>" +
                         "• YouTube H.264 Export<br>" +
-                        "• TikTok Vertical (9:16)<br><br>" +
+                        "• TikTok Vertical (9:16)<br>" +
+                        "• Pinterest H.264 Export<br><br>" +
 
                         "Open Source (MIT License)<br>" +
                         "Free to Use — Donations Appreciated<br><br>" +

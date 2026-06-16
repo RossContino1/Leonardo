@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
 public final class AppInfo {
 
     public static final String NAME = "Leonardo";
-    public static final String VERSION = "10.0.14";
+    public static final String VERSION = "10.0.15";
     public static final String AUTHOR = "Ross Contino";
     public static final String WEBSITE = "https://bytesbreadbbq.com";
     public static final String COPYRIGHT = "© 2026 Ross Contino";

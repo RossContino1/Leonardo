@@ -444,6 +444,24 @@ public class MainWindow extends JFrame {
                 ".mp4",
                 youtubeArgs
         );
+        
+        /* Add Pinterest Here*/
+        
+        java.util.List<String> pinterestArgs = java.util.List.of(
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p",
+                "-profile:v", "high",
+                "-level", "4.1",
+                "-movflags", "+faststart",
+                "-c:a", "aac",
+                "-b:a", "192k"
+        );
+
+        Preset pinterestPreset = new Preset(
+                "Pinterest H.264",
+                ".mp4",
+                pinterestArgs
+        );
 
         java.util.List<String> tiktokArgs;
         if (FFmpegUtil.hasEncoder("libx264")) {
@@ -489,6 +507,7 @@ public class MainWindow extends JFrame {
         presetComboBox.addItem(davinciPreset);
         presetComboBox.addItem(remuxPreset);
         presetComboBox.addItem(youtubePreset);
+        presetComboBox.addItem(pinterestPreset);
         presetComboBox.addItem(tiktokPreset);
 
         presetComboBox.setSelectedIndex(0);

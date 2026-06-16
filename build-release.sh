@@ -2,7 +2,7 @@
 set -euo pipefail
 
 APP_NAME="Leonardo"
-VERSION="10.0.14"
+VERSION="10.0.15"
 RELEASE_ROOT="release"
 RELEASE_DIR="${RELEASE_ROOT}/${APP_NAME}-${VERSION}"
 
